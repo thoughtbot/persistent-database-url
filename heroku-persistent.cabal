@@ -1,11 +1,17 @@
 name:                   heroku-persistent
-version:                0.0.0
+version:                0.1.0
 author:                 Pat Brisbin <pbrisbin@gmail.com>
 maintainer:             Pat Brisbin <pbrisbin@gmail.com>
 license:                MIT
 license-File:           LICENSE
--- synopsis:               Short description, appears in Hackage listings
--- description:            Long explanation, appears at top of project page
+synopsis:               Parse DATABASE_URL into configuration types for Persistent
+description:
+  A thin wrapper over the heroku package. Converts the parameters parsed from
+  DATABASE_URL to the concrete configuration types required by persistent.
+  .
+  Currently, only persistent-postgresql's PostgresConf is provided.
+  .
+
 cabal-Version:          >= 1.10
 build-Type:             Simple
 
