@@ -18,20 +18,26 @@ cabal install heroku-persistent
 
 Adjusting the [Yesod][] scaffold to run on Heroku:
 
-**Application.hs**:
+**config/settings.yml**
+
+``` yaml
+database-url: "_env:DATABASE_URL:postgres://user:pass@localhost:5432/dbname"
+database-pool-size: "_env:DB_POOL:5"
+```
+
+**Settings.hs**:
 
 ```haskell
-import Web.Heroku.Persist.Postgresql (postgresConf)
+import Web.Heroku.Persist.Postgresql (fromDatabaseUrl)
 
-makeFoundation :: AppConfig DefaultEnv Extra -> IO App
-makeFoundation conf = do
-    -- ...
+instance FromJSON AppSettings where
+    parseJSON = withObject "AppSettings" $ \o -> do
+        appDatabaseConf <- fromDatabaseUrl
+                             <$> o .: "database-pool-size"
+                             <*> o .: "database-url"
+        -- ...
 
-    dbconf <- postgresConf 10
-
-    p <- Database.Persist.createPoolConfig (dbconf :: Settings.PersistConf)
-
-    -- ...
+        return AppSettings {..}
 ```
 
 [yesod]: http://www.yesodweb.com
