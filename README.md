@@ -39,5 +39,5 @@ makeFoundation conf = do
 ## How to run tests
 
 ```
-cabal configure --enable-tests && cabal build && cabal test
+stack test
 ```
