@@ -1,17 +1,16 @@
-# heroku-persistent
+# persistent-database-url
 
-A thin wrapper over the [heroku][] package. Converts the parameters parsed from
-`DATABASE_URL` to the concrete configuration types required by persistent.
+Converts the parameters parsed from a database url to the concrete configuration
+types required by persistent.
 
 Currently, only [persistent-postgresql][]'s `PostgresConf` is provided.
 
-[heroku]: http://hackage.haskell.org/package/heroku
 [persistent-postgresql]: http://hackage.haskell.org/package/persistent-postgresql
 
 ## Installation
 
 ```
-cabal install heroku-persistent
+cabal install persistent-database-url
 ```
 
 ## Example Usage
@@ -28,7 +27,7 @@ database-pool-size: "_env:DB_POOL:5"
 **Settings.hs**:
 
 ```haskell
-import Web.Heroku.Persist.Postgresql (fromDatabaseUrl)
+import Database.Persist.URL (fromDatabaseUrl)
 
 instance FromJSON AppSettings where
     parseJSON = withObject "AppSettings" $ \o -> do

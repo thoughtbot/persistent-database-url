@@ -1,7 +1,6 @@
-resolver: lts-5.5
+resolver: lts-5.11
 
 packages:
 - '.'
 
-extra-deps:
-- heroku-0.1.2.2
+extra-deps: []
