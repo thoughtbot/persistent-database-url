@@ -4,13 +4,11 @@ module Web.Heroku.Persist.Postgresql
     , fromDatabaseUrl
     ) where
 
-import Control.Applicative ((<$>))
 import Data.ByteString (ByteString)
 import Data.Text (Text)
 import Data.Text.Encoding (encodeUtf8)
 import Data.Monoid ((<>))
 import Database.Persist.Postgresql (PostgresConf(..))
-import Web.Heroku (dbConnParams)
 import Web.Heroku.Postgres (dbConnParams, parseDatabaseUrl)
 
 import qualified Data.Text as T
