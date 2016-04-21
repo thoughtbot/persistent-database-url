@@ -26,6 +26,7 @@ library
                       , persistent-postgresql >= 1.0.0
                       , uri-bytestring
                       , fail
+                      , string-conversions
 
 test-suite spec
   type:                 exitcode-stdio-1.0
@@ -37,6 +38,8 @@ test-suite spec
                       , hspec
                       , persistent-database-url
                       , persistent-postgresql
+                      , bytestring
+                      , text
 
 source-repository head
   type:                 git

@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Database.Persist.URL
     ( fromDatabaseUrl
@@ -7,6 +8,8 @@ import Control.Monad (unless)
 import Control.Monad.Fail (MonadFail)
 import Data.ByteString (ByteString, uncons)
 import Data.Monoid ((<>))
+import Data.String.Conversions (ConvertibleStrings(..))
+import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Database.Persist.Postgresql (PostgresConf(..))
 import URI.ByteString
     ( Authority(..)
@@ -22,9 +25,11 @@ import URI.ByteString
 import qualified Data.ByteString.Char8 as Char8
 
 -- | Build a @'PostgresConf'@ by parsing a database URL String
-fromDatabaseUrl :: MonadFail m => Int -> ByteString -> m PostgresConf
+fromDatabaseUrl
+    :: (MonadFail m, ConvertibleStrings s ByteString)
+    => Int -> s -> m PostgresConf
 fromDatabaseUrl size url = do
-    uri <- abortLeft $ parseURI strictURIParserOptions url
+    uri <- abortLeft $ parseURI strictURIParserOptions $ toStrictByteString url
     auth <- abortNothing "authority" $ uriAuthority uri
     userInfo <- abortNothing "user info" $ authorityUserInfo auth
     port <- abortNothing "port" $ authorityPort auth
