@@ -28,19 +28,21 @@ spec =
         pgConnStr <$> conf `shouldBe`
             Just "user=user password=password host=host port=1234 dbname=db"
         pgPoolSize <$> conf `shouldBe` Just 10
-    it "should handle an invalid URL" $
-        fromDatabaseUrl 10 ("postgres://user:password@/db" :: ByteString)
-            `shouldThrow`
-                (== userError "DATABASE_URL failed to parse: MalformedPath")
+    it "should handle an invalid URL" $ do
+        let url = "postgres://user:password@/db" :: ByteString
+        let conf = fromDatabaseUrl 10 url
+        pgConnStr <$> conf `shouldBe` Nothing
     it "should handle a missing authority" $
-        fromDatabaseUrl 10 ("postgres:/db" :: ByteString)
-            `shouldThrow` (== userError "DATABASE_URL is missing authority")
-    it "should handle a missing path" $
-        fromDatabaseUrl 10 ("postgres://user:pass@example:123" :: ByteString)
-            `shouldThrow` (== userError "DATABASE_URL is missing path")
+        pgConnStr <$> fromDatabaseUrl 10 ("postgres:/db" :: ByteString)
+            `shouldBe` Nothing
+    it "should handle a missing path" $ do
+        let url = "postgres://user:pass@example:123" :: ByteString
+        let conf = fromDatabaseUrl 10 url
+        pgConnStr <$> conf `shouldBe` Nothing
     it "should handle missing authentication" $
-        fromDatabaseUrl 10 ("postgres://example/db" :: ByteString)
-            `shouldThrow` (== userError "DATABASE_URL is missing user info")
-    it "should handle a different protocol" $
-        fromDatabaseUrl 10 ("mysql://user:pass@example:123/db" :: ByteString)
-            `shouldThrow` (== userError "DATABASE_URL has unknown scheme")
+        pgConnStr <$> fromDatabaseUrl 10 ("postgres://example/db" :: ByteString)
+            `shouldBe` Nothing
+    it "should handle a different protocol" $ do
+        let url = "mysql://user:pass@example:123/db" :: ByteString
+        let conf = fromDatabaseUrl 10 url
+        pgConnStr <$> conf `shouldBe` Nothing

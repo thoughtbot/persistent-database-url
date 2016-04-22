@@ -4,8 +4,7 @@ module Database.Persist.URL
     ( fromDatabaseUrl
     ) where
 
-import Control.Monad (unless)
-import Control.Monad.Fail (MonadFail)
+import Control.Monad (MonadPlus, mzero, unless)
 import Data.ByteString (ByteString, uncons)
 import Data.Monoid ((<>))
 import Data.String.Conversions (ConvertibleStrings(..))
@@ -26,16 +25,15 @@ import qualified Data.ByteString.Char8 as Char8
 
 -- | Build a @'PostgresConf'@ by parsing a database URL String
 fromDatabaseUrl
-    :: (MonadFail m, ConvertibleStrings s ByteString)
+    :: (MonadPlus m, ConvertibleStrings s ByteString)
     => Int -> s -> m PostgresConf
 fromDatabaseUrl size url = do
     uri <- abortLeft $ parseURI strictURIParserOptions $ toStrictByteString url
-    auth <- abortNothing "authority" $ uriAuthority uri
-    userInfo <- abortNothing "user info" $ authorityUserInfo auth
-    port <- abortNothing "port" $ authorityPort auth
-    dbName <- abortNothing "path" $ snd <$> uncons (uriPath uri)
-    unless (schemeBS (uriScheme uri) == "postgres") $
-        fail "DATABASE_URL has unknown scheme"
+    auth <- abortNothing $ uriAuthority uri
+    userInfo <- abortNothing $ authorityUserInfo auth
+    port <- abortNothing $ authorityPort auth
+    dbName <- abortNothing $ snd <$> uncons (uriPath uri)
+    unless (schemeBS (uriScheme uri) == "postgres") mzero
 
     return PostgresConf
         { pgConnStr =
@@ -47,8 +45,8 @@ fromDatabaseUrl size url = do
         , pgPoolSize = size
         }
 
-abortLeft :: (MonadFail m, Show e) => Either e b -> m b
-abortLeft = either (fail . ("DATABASE_URL failed to parse: " <>) . show) return
+abortLeft :: (MonadPlus m, Show e) => Either e b -> m b
+abortLeft = either (const mzero) return
 
-abortNothing :: MonadFail m => String -> Maybe a -> m a
-abortNothing s = maybe (fail $ "DATABASE_URL is missing " <> s) return
+abortNothing :: MonadPlus m => Maybe a -> m a
+abortNothing = maybe mzero return
