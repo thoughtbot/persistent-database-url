@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP #-}
 module Database.Persist.URL
     ( fromDatabaseUrl
     ) where
@@ -15,7 +16,11 @@ import URI.ByteString
     ( Authority(..)
     , Host(..)
     , Port(..)
+#if MIN_VERSION_uri_bytestring(0,2,0)
     , URIRef(..)
+#else
+    , URI(..)
+#endif
     , UserInfo(..)
     , Scheme(..)
     , parseURI
