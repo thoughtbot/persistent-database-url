@@ -1,6 +1,7 @@
 language: c
 
 sudo: false
+email: false
 cache:
   directories:
   - $HOME/.stack/
